@@ -27,18 +27,24 @@ func _ready():
 	add_to_group("mod_init")
 
 	
-	
 func modInit():
+
+	# Just extending scripts
 	ModLoaderMod.install_script_extension(ext_dir + "Achievement_MINE_ALL.gd")
 	ModLoaderMod.install_script_extension(ext_dir + "AssignmentDisplay.gd")
 	ModLoaderMod.install_script_extension(ext_dir + "TileDataGenerator.gd")
+
+	# Loading assigments
 	var pathToModYaml : String = "res://mods-unpacked/POModder-MoreGuildAssignments/yaml/assignments-complete.yaml"
-	ModLoaderLog.info("Trying to parse YAML: %s" % pathToModYaml, MYMODNAME_LOG)
 	Data.parseAssignmentYaml(pathToModYaml)
-	
+
+	# Hooking to level_ready
 	StageManager.connect("level_ready", _on_level_ready)
+
+	# Adding new archtypes
 	manage_overwrites()	
-	
+
+	# Loading nes scene and adding it as child to Stage Manager (To look what it contains, also to check if Stage Manager does not autoclean childs)
 	var stage_manager_extender = preload("res://mods-unpacked/POModder-MoreGuildAssignments/content/StageManagerExtenderMap/StageManagerExtenderMap.tscn").instantiate()
 	get_tree().get_root().find_child("StageManager",false,false).add_child(stage_manager_extender)
 	
@@ -52,6 +58,7 @@ func manage_overwrites():
 	
 	
 func _on_level_ready():
+	# Check for new assigment thieves to load drop_bearer_manger
 	if Data.of("assignment.id") is String and Data.of("assignment.id") == "thieves":
 		var drop_bearer_manager = preload("res://mods-unpacked/POModder-MoreGuildAssignments/content/drop_bearer/drop_bearer_manager.tscn").instantiate()
 		get_tree().get_root().get_child(13).map.add_child(drop_bearer_manager)
